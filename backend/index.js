@@ -25,9 +25,15 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/project4'
 app.use('/api/admin', adminRoutes);
 app.use('/api/client', clientRoutes);
 
-// Base Route
-app.get('/', (req, res) => {
-    res.send('Order Management System API Running');
+// Serve Static Assets in Production
+const path = require('path');
+
+// Serve frontend build files
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// Handle React Routing (SPA) - Return index.html for all non-API routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
 });
 
 // Init Cron
