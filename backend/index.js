@@ -33,7 +33,13 @@ const fs = require('fs');
 const distPath = path.join(__dirname, '../frontend/dist');
 if (fs.existsSync(distPath)) {
     console.log('Serving static files from:', distPath);
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, {
+        setHeaders: (res, path) => {
+            if (path.endsWith('.js')) {
+                res.setHeader('Content-Type', 'application/javascript');
+            }
+        }
+    }));
 } else {
     console.log('Frontend build not found at:', distPath);
 }
