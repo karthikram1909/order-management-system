@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'order-management-system-production-a1de.up.railway.app';
+const API_URL = import.meta.env.DEV ? 'http://localhost:5000/api' : '/api';
 
 export const api = axios.create({
     baseURL: API_URL,
