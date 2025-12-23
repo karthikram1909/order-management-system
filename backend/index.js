@@ -39,12 +39,19 @@ if (fs.existsSync(distPath)) {
 }
 
 // Handle React Routing (SPA) - Return index.html for all non-API routes
-app.get('*', (req, res, next) => {
+app.get(/.*/, (req, res, next) => {
     // Don't intercept API routes
     if (req.url.startsWith('/api')) {
         return next();
     }
-    res.sendFile(path.join(distPath, 'index.html'));
+
+    // Check if index.html exists before trying to send it
+    const indexPath = path.join(distPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        res.status(503).send('System is starting up or Frontend build is missing. Please check logs.');
+    }
 });
 
 // Init Cron
