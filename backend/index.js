@@ -27,13 +27,24 @@ app.use('/api/client', clientRoutes);
 
 // Serve Static Assets in Production
 const path = require('path');
+const fs = require('fs');
 
-// Serve frontend build files
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// Verify dist folder exists
+const distPath = path.join(__dirname, '../frontend/dist');
+if (fs.existsSync(distPath)) {
+    console.log('Serving static files from:', distPath);
+    app.use(express.static(distPath));
+} else {
+    console.log('Frontend build not found at:', distPath);
+}
 
 // Handle React Routing (SPA) - Return index.html for all non-API routes
-app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+app.get('*', (req, res, next) => {
+    // Don't intercept API routes
+    if (req.url.startsWith('/api')) {
+        return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Init Cron
